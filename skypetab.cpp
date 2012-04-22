@@ -96,8 +96,6 @@ void SkypeTab::stage1Init()
 	if((settings.value("startup/activate", QVariant::fromValue(true)).toBool()) &&
 				SingleInstance::activatePreviousInstance())
 		exit(0);
-	else
-		SingleInstance::createWatcher();
 }
 
 void SkypeTab::stage2Init()

@@ -1,25 +1,19 @@
 #include "singleinstance.h"
 #include "skypetab.h"
+#include "mainwindow.h"
 #include "x11.h"
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
-#define WIN_NAME "SkypeTabWindowActivator"
 #define WIN_MSG "Activate"
 
 namespace skypetab
 {
-SingleInstance::SingleInstance(QWidget *parent) :
-	QWidget(parent)
-{
-	setWindowTitle(WIN_NAME);
-}
-
 
 WId FindXWindow(WId parent)
 {
 	WId root, *children;
 	unsigned int nchildren;
-	Atom WM_NAME = XInternAtom(X11::XDisplay, "WM_NAME",0);
+	Atom WM_CLASS = XInternAtom(X11::XDisplay, "WM_CLASS",0);
 	XQueryTree(X11::XDisplay, parent, &root, &parent,&children, &nchildren);
 	WId ret=0;
 	for(unsigned int c=0; c<nchildren; c++)
@@ -30,14 +24,14 @@ WId FindXWindow(WId parent)
 		unsigned char *value;
 		int format;
 		Atom actual_type;
-		if(XGetWindowProperty(X11::XDisplay,win,WM_NAME,0,1024,False,XA_STRING, &actual_type, &format,
+		if(XGetWindowProperty(X11::XDisplay,win,WM_CLASS,0,1024,False,XA_STRING, &actual_type, &format,
 						   &len,&bytes_after,&value)==Success)
 		{
 			char*val=new char[len+1];
 			memcpy(val, value, len);
 			val[len]=0;
 			XFree(value);
-			if(0==strcmp(val, WIN_NAME))
+			if(0==strcmp(val, "SkypeTab"))
 			{
 				ret=win;
 				break;
@@ -72,23 +66,15 @@ bool skypetab::SingleInstance::activatePreviousInstance()
 	XSync(X11::XDisplay, False);
 	return true;
 }
-SingleInstance* SingleInstance::_instance=0;
-void skypetab::SingleInstance::createWatcher()
-{
-	if(_instance)
-		return;
-	_instance=new SingleInstance();
-	_instance->winId();
-}
 
-bool SingleInstance::x11Event(XEvent *ev)
+bool STabMainWindow::x11Event(XEvent *ev)
 {
 	if(ev->type==ClientMessage)
 	{
-
 		if(0==memcmp(ev->xclient.data.b, WIN_MSG, strlen(WIN_MSG)))
 		{
 			SkypeTab::_instance->mainWindow->show();
+			SkypeTab::_instance->mainWindow->activateWindow();
 		}
 	}
 	return QWidget::x11Event(ev);

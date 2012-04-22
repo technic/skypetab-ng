@@ -32,6 +32,7 @@ protected:
 	bool contactsHidden();
 	virtual void closeEvent(QCloseEvent *);
 	bool eventFilter(QObject*obj, QEvent*ev);
+	bool x11Event(XEvent *ev);
 	void setVisible(bool visible);
 	void changeEvent(QEvent *);
 private:
