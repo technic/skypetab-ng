@@ -63,6 +63,7 @@ void SkypeTab::_stage2Init()
 	if(mainWindow!=0)
 		return;
 	mainWindow=new STabMainWindow();
+	mainWindow_created = true;
 	_trayIcon=0;
 	_trayMenu=0;
 	_myMenu=new QMenu("SkypeTab");
@@ -274,6 +275,7 @@ QSettings SkypeTab::settings("kekekeks","skypetab-ng");
 WinManager SkypeTab::winManager=Generic;
 bool* SkypeTab::enabledTabClassesList=0;
 QString SkypeTab::windowClassName = "SkypeTab";
+bool SkypeTab::mainWindow_created = false;
 
 const char* SkypeTab::tabClassesList[][2]={
 	{"Skype::ChatWindow", "Chats"},
@@ -322,6 +324,10 @@ WId SkypeTab::onNewWindow()
 
 void SkypeTab::onTryShow(QWidget *widget)
 {
+	if(!mainWindow_created) {
+		printf("FOOO");
+		return;
+	}
 	if (_mainSkypeWindow)
 		return;
 	stage2Init();

@@ -46,6 +46,7 @@ public:
 	static bool onWindowActivation(QWidget*widget);
 	static QIcon onSetIcon(const QIcon&, QSystemTrayIcon*);
 	static QIcon GetIcon();
+	static bool mainWindow_created;
 	STabMainWindow* mainWindow;
 	static void onTryShow(QWidget*widget);
 	void raiseTrayMenuActivated(QSystemTrayIcon::ActivationReason reason);
